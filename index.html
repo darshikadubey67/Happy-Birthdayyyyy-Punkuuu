@@ -1,0 +1,1391 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Birthday — Surprise</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+
+  <meta name="theme-color" content="#ff6fb5" />
+  <style>
+    :root {
+      --bg: #0b0b15;
+      --card: #151527;
+      --ink: #f7f7ff;
+      --muted: #bfc3d9;
+      --rose: #ff6fb5;
+      --mint: #8affd1;
+      --gold: #ffd166;
+      --glow: 0 0 18px rgba(255, 111, 181, 0.35);
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, system-ui, Segoe UI, Roboto, "Helvetica Neue", Arial;
+    }
+
+    /* full-screen containers */
+    .screen {
+      position: relative;
+      display: flex;
+      justify-content: flex-start;
+      /* align top */
+      flex-direction: column;
+      overflow: visible;
+      /* allow content to flow */
+      padding: 28px;
+    }
+
+    /* INTRO */
+    #intro {
+      position: fixed;
+      /* make full screen */
+      inset: 0;
+      /* top:0; right:0; bottom:0; left:0 */
+      display: flex;
+      /* use flexbox */
+      justify-content: center;
+      /* horizontal center */
+      align-items: center;
+      /* vertical center */
+      flex-direction: column;
+      /* stack heading + buttons vertically */
+      z-index: 10;
+      background:
+        radial-gradient(1200px 800px at 10% 0%, rgba(255, 111, 181, 0.06), transparent 30%),
+        radial-gradient(1000px 600px at 90% 100%, rgba(138, 255, 209, 0.04), transparent 30%),
+        linear-gradient(160deg, rgba(11, 7, 18, 1), rgba(22, 8, 26, 1));
+      padding: 32px;
+    }
+
+    .intro-inner {
+      max-width: 980px;
+      text-align: center;
+      /* keep text centered inside container */
+    }
+
+
+    h1.title {
+      font-size: clamp(28px, 6vw, 56px);
+      margin: 0 0 10px;
+      letter-spacing: 0.6px;
+      font-weight: 900;
+      color: #ffd6ec;
+      text-shadow: 0 10px 30px rgba(255, 111, 181, 0.12)
+    }
+
+    p.lead {
+      color: var(--muted);
+      margin: 0 0 20px;
+      font-size: 1.05rem
+    }
+
+    /* glow buttons */
+    .controls {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center
+    }
+
+    button.btn {
+      padding: 12px 20px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 800;
+      letter-spacing: .4px;
+      box-shadow: var(--glow);
+      transform-origin: center;
+      transition: transform .18s, opacity .18s
+    }
+
+    button#yes {
+      background: linear-gradient(135deg, #ff9ac4, #ff6fb5);
+      color: #1a0416
+    }
+
+    button#no {
+      background: linear-gradient(135deg, #9ef1d6, #58e2b6);
+      color: #06261a
+    }
+
+    button.btn:active {
+      transform: scale(.98)
+    }
+
+    /* sparkle layer */
+    .sparkles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2
+    }
+
+    .spark {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+      filter: blur(.6px);
+      opacity: .9;
+      box-shadow: 0 0 10px rgba(255, 255, 255, .6);
+      animation: twinkle 3s infinite
+    }
+
+    @keyframes twinkle {
+      0% {
+        opacity: .05
+      }
+
+      50% {
+        opacity: 1
+      }
+
+      100% {
+        opacity: .05
+      }
+    }
+
+    /* balloon SVG layer (decorative) */
+    .balloon {
+      position: absolute;
+      width: 64px;
+      height: 88px;
+      transform-origin: center;
+      animation: floating linear infinite;
+    }
+
+    @keyframes floating {
+      0% {
+        transform: translateY(0) rotate(-4deg)
+      }
+
+      50% {
+        transform: translateY(-40vh) rotate(6deg)
+      }
+
+      100% {
+        transform: translateY(-80vh) rotate(-4deg)
+      }
+    }
+
+    /* GIF CENTERED MODAL (hidden by default) */
+    #gifModal {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      z-index: 60;
+      pointer-events: none
+    }
+
+    #gifModalInner {
+      pointer-events: auto;
+      max-width: 92vw;
+      min-width: 280px;
+      background: linear-gradient(180deg, rgba(0, 0, 0, .75), rgba(0, 0, 0, .6));
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, .7);
+      text-align: center;
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      transform: scale(.96);
+      transition: opacity .36s, transform .36s
+    }
+
+    #gifModal.show #gifModalInner {
+      opacity: 1;
+      transform: scale(1)
+    }
+
+    #gifImg {
+      max-width: 84vw;
+      max-height: 56vh;
+      border-radius: 10px;
+      display: block;
+      margin: 0 auto
+    }
+
+    #gifText {
+      margin-top: 12px;
+      font-size: 1.15rem;
+      color: var(--ink);
+      font-weight: 700
+    }
+
+    #gifCount {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .95rem
+    }
+
+    /* transition overlay fade */
+    .fade-out {
+      animation: fadeOut .7s forwards
+    }
+
+    @keyframes fadeOut {
+      to {
+        opacity: 0;
+        transform: translateY(8px) scale(.995)
+      }
+    }
+
+    /* MAIN PAGE */
+    #main {
+      display: none;
+      z-index: 20;
+      align-items: flex-start;
+      padding: 28px;
+      overflow: auto
+    }
+
+    header.mainHead {
+      width: 100%;
+      max-width: 1100px;
+      margin: 0 auto 18px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-style: italic;
+      gap: 12px
+    }
+
+.mainTitle {
+  font-family: 'Great Vibes', cursive; /* fun, stylish font */
+  font-size: 5rem !important;
+  font-weight: 900;
+  text-align: center;
+  background: linear-gradient(90deg, #ff6f61, #ffb347, #ffd700, #ff6f61);
+  background-size: 400% 400%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+  animation: shimmer 5s ease-in-out infinite, pulse 2s infinite;
+  margin: 2rem 0;
+}
+
+/* Smooth Shimmer Gradient */
+@keyframes shimmer {
+  0% {background-position: 0% 50%;}
+  50% {background-position: 100% 50%;}
+  100% {background-position: 0% 50%;}
+}
+
+/* Subtle Pulse */
+@keyframes pulse {
+  0%, 100% {transform: scale(1);}
+  50% {transform: scale(1.05);}
+}
+
+/* Optional: sparkle pseudo-element */
+.mainTitle::after {
+  content: "✨";
+  font-size: 2rem;
+  position: absolute;
+  animation: sparkle 1.5s infinite;
+}
+
+@keyframes sparkle {
+  0%,100% {opacity:0; transform: translateY(0) rotate(0deg);}
+  50% {opacity:1; transform: translateY(-10px) rotate(20deg);}
+}
+
+/* Responsive */
+@media(max-width:768px){
+  .mainTitle { font-size:3.5rem; }
+}
+
+
+/* Responsive adjustments for smaller screens */
+@media(max-width:768px){
+  .mainTitle { font-size:3.5rem; }  /* scales down on mobile */
+}
+
+    
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    h2.mainTitle {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 38px);
+      letter-spacing: .6px;
+      text-align: center;
+    }
+
+    /* gift cards */
+    .giftsRow {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 18px auto
+    }
+
+    .gift-card {
+      background: linear-gradient(145deg, #4a0e4e, #7b1fa2);
+      color: white;
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      font-weight: bold;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+
+    .gift-card:hover {
+      transform: scale(1.08) rotate(-2deg);
+      box-shadow: 0 12px 30px rgba(255, 20, 147, 0.5);
+    }
+
+    .card {
+      width: 220px;
+      height: 150px;
+      border-radius: 14px;
+      background: linear-gradient(180deg, #2a0b20, #3a0f2a);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #ffd6ec;
+      font-weight: 800;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform .28s
+    }
+
+    .card:hover {
+      transform: translateY(-8px) rotate(-1deg)
+    }
+
+    .card .faceFront {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.05rem
+    }
+
+    .card .faceBack {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, #ffd6ec, #ffb6d9);
+      color: #2a0b20;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: 700;
+      font-size: .95rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity .28s, transform .28s
+    }
+
+    .card.open .faceBack {
+      opacity: 1;
+      transform: translateY(0)
+    }
+
+
+    /* Section styling */
+    .birthday-section {
+      text-align: center;
+      padding: 2rem;
+      font-family: 'Poppins', sans-serif;
+      background: #fff5f8;
+    }
+
+    .birthday-section h2 {
+      color: #ff4081;
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    .birthday-section .subheading {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: #ff4081;
+      text-shadow: 1px 1px 2px rgba(255, 64, 129, 0.5);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideFadeBounce 1.5s ease forwards;
+      animation-delay: 1s;
+    }
+
+    /* Video Card Styling */
+    .video-card {
+      position: relative;
+      max-width: 500px;
+      margin: 0 auto;
+      border-radius: 25px;
+      overflow: hidden;
+      padding: 10px;
+      background: linear-gradient(145deg, #fff0f5, #ffe6f0);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(255, 64, 129, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .video-card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25), 0 0 20px rgba(255, 64, 129, 0.5);
+    }
+
+    .video-card video {
+      width: 100%;
+      max-height: 320px;
+      object-fit: cover;
+      border-radius: 20px;
+      display: block;
+    }
+
+    /* Overlay subtle sparkle inside card */
+    .video-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 25px;
+      pointer-events: none;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.08), transparent 70%);
+    }
+
+    /* Confetti */
+    .card-decoration .confetti {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      animation: fall 3s linear infinite;
+    }
+
+    .card-decoration .confetti:nth-child(1) {
+      left: 10%;
+      background: #ffdc00;
+      animation-delay: 0s;
+      animation-duration: 2.5s;
+    }
+
+    .card-decoration .confetti:nth-child(2) {
+      left: 25%;
+      background: #ff4081;
+      animation-delay: 0.3s;
+      animation-duration: 3s;
+    }
+
+    .card-decoration .confetti:nth-child(3) {
+      left: 40%;
+      background: #42a5f5;
+      animation-delay: 0.6s;
+      animation-duration: 2.8s;
+    }
+
+    .card-decoration .confetti:nth-child(4) {
+      left: 55%;
+      background: #66bb6a;
+      animation-delay: 0.9s;
+      animation-duration: 3.2s;
+    }
+
+    .card-decoration .confetti:nth-child(5) {
+      left: 70%;
+      background: #ab47bc;
+      animation-delay: 1.2s;
+      animation-duration: 2.7s;
+    }
+
+    .card-decoration .confetti:nth-child(6) {
+      left: 85%;
+      background: #ffa726;
+      animation-delay: 1.5s;
+      animation-duration: 3.1s;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(250px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Balloons */
+    .balloons .balloon {
+      position: absolute;
+      bottom: -50px;
+      width: 25px;
+      height: 35px;
+      border-radius: 50% 50% 50% 50%;
+      opacity: 0.9;
+      animation: floatUp linear infinite;
+    }
+
+    .balloons .balloon1 {
+      left: 20%;
+      background: #ff4081;
+      animation-duration: 6s;
+      animation-delay: 0s;
+    }
+
+    .balloons .balloon2 {
+      left: 40%;
+      background: #42a5f5;
+      animation-duration: 5.5s;
+      animation-delay: 1s;
+    }
+
+    .balloons .balloon3 {
+      left: 60%;
+      background: #ffdc00;
+      animation-duration: 6.5s;
+      animation-delay: 0.5s;
+    }
+
+    .balloons .balloon4 {
+      left: 80%;
+      background: #66bb6a;
+      animation-duration: 6s;
+      animation-delay: 1.2s;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-300px) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Heading & subheading animations */
+    @keyframes slideFadeBounce {
+      0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+      }
+
+      60% {
+        opacity: 1;
+        transform: translateY(-2px) scale(1.05);
+      }
+
+      80% {
+        transform: translateY(0px) scale(0.98);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    /* notes area */
+    .notes {
+      max-width: 900px;
+      margin: 18px auto;
+      padding: 20px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #14041a, #290722);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, .5)
+    }
+
+    .notes h3 {
+      margin: 0 0 8px
+    }
+
+    .notes p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    /* footer */
+    .footer {
+      text-align: center;
+      padding: 20px;
+      color: #ff66b2;
+      font-weight: bold;
+      font-size: 1.2rem;
+      animation: heartbeat 1.5s infinite;
+    }
+
+    @keyframes heartbeat {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+    /* canvas layers */
+    canvas.layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5
+    }
+
+    /* small */
+    @media (max-width:720px) {
+      .card {
+        width: 44vw
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Intro Screen -->
+  <section id="intro" class="screen" aria-labelledby="introTitle" role="dialog" aria-modal="true">
+    <div class="sparkles" aria-hidden="true" id="sparkles"></div>
+
+    <!-- balloons decorative -->
+    <svg class="balloon" id="b1" style="left:8%;bottom:-20px;fill:#ff6fb5;animation-duration:18s"></svg>
+    <svg class="balloon" id="b2" style="left:28%;bottom:-40px;fill:#ffd166;animation-duration:20s"></svg>
+    <svg class="balloon" id="b3" style="left:70%;bottom:-10px;fill:#8affd1;animation-duration:16s"></svg>
+
+    <div class="intro-inner" role="document">
+
+      <h1 class="birthdayTitle"> Happy Birthday My Love 🎉</h1>
+
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+        .birthdayTitle {
+          font-family: 'Great Vibes', cursive;
+          font-size: clamp(2.5rem, 6vw, 5rem);
+          /* responsive and moderate size */
+          text-align: center;
+          margin: 60px 0 40px;
+          background: linear-gradient(90deg, #ff6fb5, #ffd166, #8affd1);
+          background-size: 200% 200%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: shimmer 5s ease infinite;
+          text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+          position: relative;
+        }
+
+        /* subtle shimmer animation */
+        @keyframes shimmer {
+          0% {
+            background-position: 0% 50%;
+          }
+
+          50% {
+            background-position: 100% 50%;
+          }
+
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+
+        /* small floating sparkles */
+        .birthdayTitle::after {
+          content: "✨🎈✨";
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          top: -25px;
+          font-size: 1.5rem;
+          opacity: 0.6;
+          animation: floatSparkle 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatSparkle {
+          0% {
+            transform: translateX(-50%) translateY(0);
+            opacity: 0.5;
+          }
+
+          50% {
+            transform: translateX(-50%) translateY(-12px);
+            opacity: 0.8;
+          }
+
+          100% {
+            transform: translateX(-50%) translateY(0);
+            opacity: 0.6;
+          }
+        }
+      </style>
+
+      <h3 class="title">A Special Surprise</h3>
+      <h2 class="title" id="introTitle">Will you celebrate with me?</h2>
+      <p class="lead">It’s a special day — are you ready to accept this surprise?</p>
+      <div class="controls" role="group" aria-label="Choose to celebrate">
+        <button id="yes" class="btn" aria-pressed="false" aria-label="Yes, celebrate">YES</button>
+        <button id="no" class="btn" aria-pressed="false" aria-label="No, not yet">NO</button>
+      </div>
+      <p style="margin-top:18px;color:var(--muted)">Tip: Keep smiling baby love uh😊 !</p>
+    </div>
+  </section>
+
+  <!-- GIF modal (centered) -->
+  <div id="gifModal" aria-hidden="true">
+    <div id="gifModalInner" role="alertdialog" aria-live="polite" aria-atomic="true">
+      <img id="gifImg" src="" alt="celebration gif" />
+      <div id="gifText"></div>
+      <div id="gifCount" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <!-- Main Page -->
+
+  <main id="main" class="screen" aria-hidden="true" role="main" style="align-items:flex-start;">
+    <header class="mainHead" role="banner">
+      <div class="brand" aria-hidden="true">
+        <div class="logo" aria-hidden="true"></div>
+        <div class="main-birthday-heading">
+          <h2 class="mainTitle" style="text-align:center; "> Happy Birthday, My Love </h2>
+          <div style="color:var(--muted);font-size:0.95rem">
+            <h3>A little surprise, made with love ✨</h3>
+          </div>
+        </div>
+      </div>
+
+      </br>
+
+      <div style="display:flex;gap:10px;align-items:center">
+        <button id="playBgm" class="btn" style="padding:8px 12px;font-size:.9rem">Play Song</button>
+      </div>
+    </header>
+    <section style="width:100%;display:flex;flex-direction:column;align-items:center;gap:8px">
+      <div class="giftsRow" id="giftsRow" aria-label="Gift boxes">
+        <!-- gift cards inserted by JS -->
+      </div>
+
+
+
+      </div>
+
+
+
+      <section class="birthday-section">
+        <h2>Let's Celebrate Your Birthday With Me!</h2>
+        <h4 class="subheading">Before blowing the candles, make a wish baby, Love uhhh!</h4>
+
+
+        <div class="video-card">
+          <video controls>
+            <source src="Untitled video - Made with Clipchamp.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+        <section id="birthdayVideos"
+          style="padding: 50px; background: linear-gradient(135deg, #fff5f7, #e0f7fa); margin-top:40px;">
+
+          <h2 style="text-align:center; font-size:2.5rem; margin-bottom:30px; color:#d81b60;">
+            💝 Videos 🎬
+          </h2>
+
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:25px;">
+
+            <!-- Reveal Card -->
+            <div class="video-card">
+              <div class="cover">
+                <p>💖 Lovable Video</p>
+                <button class="reveal-btn">Open</button>
+              </div>
+              <div class="content">
+                <video controls>
+                  <source src="VID_20250921_063157_464.mp4" type="video/mp4">
+                  Your browser does not support video.
+                </video>
+              </div>
+            </div>
+
+            <!-- Another Card -->
+            <div class="video-card">
+              <div class="cover">
+                <p>😂 Funny Video</p>
+                <button class="reveal-btn">Open</button>
+              </div>
+              <div class="content">
+                <video controls>
+                  <source src="1758462861078732720p.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+
+
+            <!-- Another Card -->
+            <div class="video-card">
+              <div class="cover">
+                <p>😂 Funny Video</p>
+                <button class="reveal-btn">Open</button>
+              </div>
+              <div class="content">
+                <video controls>
+                  <source src="1758462666513321720p (1).mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+
+            <!-- Another Card -->
+            <div class="video-card">
+              <div class="cover">
+                <p>💖 Lovable Video</p>
+                <button class="reveal-btn">Open</button>
+              </div>
+              <div class="content">
+                <video controls>
+                  <source src="VID_20250921_062915_095.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+
+
+            <!-- Add more cards like this for all videos -->
+
+          </div>
+        </section>
+
+        <style>
+          .video-card {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+            background:
+              radial-gradient(1200px 800px at 10% 0%, rgba(255, 111, 181, 0.06), transparent 30%),
+              radial-gradient(1000px 600px at 90% 100%, rgba(138, 255, 209, 0.04), transparent 30%),
+              linear-gradient(160deg, rgba(11, 7, 18, 1), rgba(22, 8, 26, 1));
+            transition: transform 0.3s ease;
+          }
+
+          .video-card:hover {
+            transform: translateY(-5px);
+          }
+
+          .video-card .cover {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            color: #fff;
+            font-weight: bold;
+            z-index: 2;
+            transition: transform 0.6s ease, opacity 0.6s ease;
+          }
+
+          .video-card .cover p {
+            margin-bottom: 15px;
+          }
+
+          .video-card .cover .reveal-btn {
+            background: #fff;
+            color: #d81b60;
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+          }
+
+          .video-card .cover .reveal-btn:hover {
+            background: #f8bbd0;
+            color: white;
+          }
+
+          .video-card.revealed .cover {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+          }
+
+          .video-card .content video {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-top: 3px solid #f06292;
+          }
+        </style>
+
+        <div class="card-decoration" aria-hidden="true">
+          <script>
+            document.querySelectorAll(".reveal-btn").forEach(btn => {
+              btn.addEventListener("click", function () {
+                this.closest(".video-card").classList.add("revealed");
+              });
+            });
+          </script>
+
+          <span class="confetti"></span>
+          <span class="confetti"></span>
+          <span class="confetti"></span>
+          <span class="confetti"></span>
+          <span class="confetti"></span>
+          <span class="confetti"></span>
+        </div>
+      </section>
+
+      <section class="notes-section">
+        <div class="notes-card" aria-label="Personal notes">
+          <h3>Notes</h3>
+          <p>
+            <i>Happy Birthday, my love! Today is all about celebrating you—the incredible person you are, the joy you
+              bring into my life, and the countless ways you make my world brighter. I feel so lucky to have you by my
+              side, to share laughs, dreams, and even the quiet, simple moments that mean everything. You inspire me
+              with your kindness, strength, and the way you love so freely. On your special day, I hope you feel all the
+              love and happiness you deserve, because you truly make life better just by being you. Here’s to more
+              adventures, more laughter, more memories, and more love than ever before. I love you more than words could
+              ever express. Again Happy Birthday Baby! 🎉❤️</i>
+          </p>
+        </div>
+      </section>
+
+      <style>
+        .notes-section {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 50px 20px;
+          background: linear-gradient(135deg, #ffecd2, #fcb69f);
+          min-height: 100vh;
+          box-sizing: border-box;
+        }
+
+        .notes-card {
+          background: #ffffffcc;
+          /* semi-transparent white */
+          padding: 30px 40px;
+          max-width: 700px;
+          border-radius: 20px;
+          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+          text-align: center;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .notes-card h3 {
+          font-family: 'Georgia', serif;
+          font-size: 2rem;
+          color: #ff6f61;
+          margin-bottom: 20px;
+          letter-spacing: 1px;
+        }
+
+        .notes-card p {
+          font-family: 'Arial', sans-serif;
+          font-size: 1.1rem;
+          line-height: 1.8;
+          color: #333;
+        }
+
+        .notes-card:hover {
+          transform: translateY(-10px);
+          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+      </style>
+
+<div class="voice-card">
+  <h2>🎤 A Special Voice Message</h2>
+  <button id="playVoice" class="btn">Play Message</button>
+</div>
+<style>
+.voice-card {
+  background: linear-gradient(135deg, #ffb6c1, #ff69b4);
+  padding: 20px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  margin: 20px auto;
+  max-width: 400px;
+  color: white;
+  font-size: 1.2rem;
+}
+.voice-card .btn {
+  background: white;
+  color: #ff4081;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s;
+}
+.voice-card .btn:hover {
+  transform: scale(1.1);
+}
+</style>
+<script>
+const playBtn = document.getElementById("playVoice");
+let voiceMsg = new Audio("voice.mp3"); // upload your recorded mp3
+let playing = false;
+
+
+playBtn.addEventListener("click", () => {
+  if (!playing) {
+    voiceMsg.play();
+    playBtn.textContent = "Pause Message ⏸️";
+  } else {
+    voiceMsg.pause();
+    playBtn.textContent = "Play Message ▶️";
+  }
+  playing = !playing;
+});
+</script>
+
+      </section>
+      <footer>Made with endless love - Chikooo 💖</footer>
+  </main>
+
+  <!-- canvas layers for fireworks / backgrounds -->
+  <canvas id="canvasSpark" class="layer"></canvas>
+  <canvas id="canvasFire" class="layer"></canvas>
+
+  <!-- audio placeholder -->
+  <audio id="bgm" src="1758462753923983720p.mp3" preload="metadata"></audio>
+
+  <script>
+    /* ---------------------
+       Assets (GIFs)
+       --------------------- */
+    const YES_GIF = "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3b3p2azR2M3ZmbnllaTV6ZnlwYXZiNnluaGJ6aThmM3l0ZmI3NTRkbSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/pUeXcg80cO8I8/giphy.gif";
+    const NO_GIFS = [
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3b3p2azR2M3ZmbnllaTV6ZnlwYXZiNnluaGJ6aThmM3l0ZmI3NTRkbSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/cF7QqO5DYdft6/giphy.gif",
+      "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MXNidHFvdDdwb3M2Y2Y4eG9zNHhocXpjM2dicDNjbmQ4ZmtuM3hidCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/evVKsrjZEqVVWvE2VR/giphy.gif"
+    ];
+
+    /* ---------------------
+       DOM references
+       --------------------- */
+    const intro = document.getElementById('intro');
+    const btnYes = document.getElementById('yes');
+    const btnNo = document.getElementById('no');
+    const gifModal = document.getElementById('gifModal');
+    const gifInner = document.getElementById('gifModalInner');
+    const gifImg = document.getElementById('gifImg');
+    const gifText = document.getElementById('gifText');
+    const gifCount = document.getElementById('gifCount');
+    const main = document.getElementById('main');
+    const giftsRow = document.getElementById('giftsRow');
+    const canvasSpark = document.getElementById('canvasSpark');
+    const canvasFire = document.getElementById('canvasFire');
+    const playBgmBtn = document.getElementById('playBgm');
+    const bgm = document.getElementById('bgm');
+
+    /* ---------------------
+       Helper: delay
+       --------------------- */
+    function delay(ms) { return new Promise(res => setTimeout(res, ms)); }
+
+    /* ---------------------
+       Intro sparkle/population
+       --------------------- */
+    const sparkCtx = canvasSpark.getContext('2d');
+    function resizeCanvas(canvas) {
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+    }
+    resizeCanvas(canvasSpark);
+    resizeCanvas(canvasFire);
+    addEventListener('resize', () => { resizeCanvas(canvasSpark); resizeCanvas(canvasFire); });
+
+    let sparkles = [];
+    function spawnSparkles() {
+      for (let i = 0; i < 28; i++) {
+        sparkles.push({
+          x: Math.random() * innerWidth,
+          y: Math.random() * innerHeight * 0.7,
+          r: Math.random() * 2 + 0.6,
+          a: Math.random(),
+          vx: (Math.random() - 0.5) * 0.2,
+          vy: - (0.1 + Math.random() * 0.3),
+          hue: 300 + Math.random() * 60
+        });
+      }
+    }
+    spawnSparkles();
+    function tickSparkles() {
+      sparkCtx.clearRect(0, 0, canvasSpark.width, canvasSpark.height);
+      sparkles.forEach((s, i) => {
+        s.x += s.vx;
+        s.y += s.vy;
+        s.a += (Math.random() - 0.5) * 0.02;
+        if (s.y < -40) {
+          s.x = Math.random() * innerWidth;
+          s.y = innerHeight + 40;
+        }
+        sparkCtx.beginPath();
+        const g = sparkCtx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 6);
+        g.addColorStop(0, `hsla(${s.hue},100%,80%,${0.9 * s.a})`);
+        g.addColorStop(1, `hsla(${s.hue},100%,60%,0)`);
+        sparkCtx.fillStyle = g;
+        sparkCtx.fillRect(s.x - s.r * 6, s.y - s.r * 6, s.r * 12, s.r * 12);
+      });
+      requestAnimationFrame(tickSparkles);
+    }
+    tickSparkles();
+
+    /* ---------------------
+       Decorative balloon SVGs (simple shapes)
+       --------------------- */
+    function makeBalloonSVG(id) {
+      const el = document.getElementById(id);
+      el.innerHTML = `<svg viewBox="0 0 100 140" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <g transform="translate(50,40)">
+      <ellipse cx="0" cy="0" rx="30" ry="40" fill="currentColor" />
+      <path d="M -8 40 Q 0 50 8 40" fill="rgba(0,0,0,0.08)" />
+      <line x1="0" y1="40" x2="0" y2="80" stroke="rgba(255,255,255,0.1)" stroke-width="1.8" />
+    </g>
+  </svg>`;
+    }
+    makeBalloonSVG('b1'); makeBalloonSVG('b2'); makeBalloonSVG('b3');
+
+    /* ---------------------
+       GIF overlay logic
+       --------------------- */
+    async function showGifAndProceed({ gif, text, seconds = 3 }) {
+      gifImg.src = gif;
+      gifText.textContent = text;
+      gifCount.textContent = `Redirecting in ${seconds}...`;
+      gifModal.classList.add('show');
+      gifModal.setAttribute('aria-hidden', 'false');
+      gifInner.focus?.();
+      // animate countdown
+      for (let i = seconds; i > 0; i--) {
+        gifCount.textContent = `Redirecting in ${i}...`;
+        await delay(1000);
+      }
+      gifModal.classList.remove('show');
+      gifModal.setAttribute('aria-hidden', 'true');
+      await delay(240);
+      startMain();
+    }
+
+    /* attach events for keyboard accessibility */
+    btnYes.addEventListener('click', () => {
+      btnYes.setAttribute('aria-pressed', 'true');
+      showGifAndProceed({ gif: YES_GIF, text: "Yay! You made a great choice 🎉", seconds: 3 });
+    });
+    btnNo.addEventListener('click', () => {
+      btnNo.setAttribute('aria-pressed', 'true');
+      const pick = NO_GIFS[Math.floor(Math.random() * NO_GIFS.length)];
+      showGifAndProceed({ gif: pick, text: "You thought you had a choice? 😜", seconds: 3 });
+    });
+    /* keyboard support */
+    [btnYes, btnNo].forEach(b => {
+      b.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); b.click(); }
+      });
+    });
+
+    /* ---------------------
+       Start main page (transition)
+       --------------------- */
+    function startMain() {
+      // fade intro out and show main
+      intro.style.transition = 'opacity .6s, transform .6s';
+      intro.style.opacity = 0;
+      intro.style.transform = 'translateY(18px)';
+      setTimeout(() => {
+        intro.style.display = 'none';
+        main.style.display = 'flex';
+        main.setAttribute('aria-hidden', 'false');
+        // begin main animations
+        initFireworks();
+        createGiftCards();
+        enableInteractions();
+      }, 700);
+    }
+
+    /* ---------------------
+       GIF play button (music)
+       --------------------- */
+    playBgmBtn.addEventListener('click', () => {
+      if (!bgm.src) {
+        // you can set the music src here if you want
+        // bgm.src = 'your-music.mp3';
+      }
+      if (bgm.paused) bgm.play().catch(() => { }), playBgmBtn.textContent = 'Pause Song';
+      else bgm.pause(), playBgmBtn.textContent = 'Play Song';
+    });
+
+const giftQuotes = [
+  "You're my sunshine — every day brighter because of you ☀️",
+  "To the moon and back — times a thousand 🌙",
+  "Forever and always — my heart is yours ❤️",
+  "Every moment with you: is my favorite memory 💫"
+];
+
+function createGiftCards() {
+  giftsRow.innerHTML = '';
+
+  // 1–4: original gift cards with quotes
+  giftQuotes.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', `Open gift ${idx + 1}`);
+    card.innerHTML = `
+      <div class="faceFront">Gift ${idx + 1}</div>
+      <div class="faceBack">${q}</div>
+    `;
+    function openCard() { card.classList.toggle('open'); }
+    card.addEventListener('click', openCard);
+    card.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') openCard(); });
+    giftsRow.appendChild(card);
+
+    card.animate(
+      [{ transform: 'scale(.92)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }],
+      { duration: 420, delay: 120*idx, easing: 'cubic-bezier(.2,.8,.2,1)' }
+    );
+  });
+
+  // 5th card: animated image card
+  const imgCard = document.createElement('div');
+  imgCard.className = 'card';
+  imgCard.tabIndex = 0;
+  imgCard.setAttribute('role', 'button');
+  imgCard.setAttribute('aria-label', 'Open gift 5');
+  imgCard.innerHTML = `
+    <div class="faceFront">Gift 5</div>
+    <div class="faceBack">
+      <img src="892779104c3f686796ce798403a97a44.jpg" style="width:100%; height:100%; object-fit:cover; border-radius:12px;">
+    </div>
+  `;
+  function openImgCard() { imgCard.classList.toggle('open'); }
+  imgCard.addEventListener('click', openImgCard);
+  imgCard.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') openImgCard(); });
+
+  giftsRow.appendChild(imgCard);
+  imgCard.animate(
+    [{ transform: 'scale(.92)', opacity: 0 }, { transform: 'scale(1)', opacity: 1 }],
+    { duration: 420, delay: 120*4, easing: 'cubic-bezier(.2,.8,.2,1)' }
+  );
+}
+     
+
+    /* ---------------------
+       Enable click hearts on main
+       --------------------- */
+    function enableInteractions() {
+      document.addEventListener('click', (e) => {
+        if (!main.contains(e.target)) return;
+        spawnHeart(e.clientX, e.clientY);
+      });
+    }
+    function spawnHeart(x, y) {
+      const el = document.createElement('div');
+      el.style.position = 'fixed';
+      el.style.left = (x - 12) + 'px';
+      el.style.top = (y - 12) + 'px';
+      el.style.pointerEvents = 'none';
+      el.style.zIndex = 999;
+      el.style.fontSize = '22px';
+      el.textContent = '❤️';
+      el.style.transform = 'translateY(0)';
+      el.style.opacity = '1';
+      document.body.appendChild(el);
+      el.animate([{ transform: 'translateY(0)', opacity: 1 }, { transform: 'translateY(-140px)', opacity: 0 }], { duration: 1200, easing: 'cubic-bezier(.2,.8,.2,1)' }).onfinish = () => el.remove();
+    }
+
+    /* ---------------------
+       Fireworks (simple particle system on canvasFire)
+       --------------------- */
+    const fireCtx = canvasFire.getContext('2d');
+    let particles = [];
+    function initFireworks() {
+      canvasFire.style.zIndex = 15;
+      function loop() {
+        fireCtx.fillStyle = 'rgba(6,6,12,0.14)';
+        fireCtx.fillRect(0, 0, canvasFire.width, canvasFire.height);
+        for (let i = particles.length - 1; i >= 0; i--) {
+          const p = particles[i];
+          p.x += p.vx; p.y += p.vy; p.vy += 0.03; p.life--;
+          fireCtx.globalAlpha = Math.max(p.life / 60, 0);
+          fireCtx.beginPath();
+          fireCtx.fillStyle = p.color;
+          fireCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          fireCtx.fill();
+          if (p.life <= 0) particles.splice(i, 1);
+        }
+        requestAnimationFrame(loop);
+      }
+      loop();
+      setInterval(() => spawnBurst(innerWidth * 0.5, innerHeight * 0.35), 1400);
+    }
+
+    function spawnBurst(x, y) {
+      const hue = Math.floor(Math.random() * 360);
+      for (let i = 0; i < 80; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const s = 1 + Math.random() * 4;
+        particles.push({
+          x, y, vx: Math.cos(a) * s, vy: Math.sin(a) * s, life: 30 + Math.random() * 40, size: 1 + Math.random() * 2, color: `hsl(${hue},100%,60%)`
+        });
+      }
+    }
+
+    /* ---------------------
+       Initial small animation for intro buttons
+       --------------------- */
+    (function introBtnPulse() {
+      const yes = document.getElementById('yes'), no = document.getElementById('no');
+      setInterval(() => { yes.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.04)' }, { transform: 'scale(1)' }], { duration: 2000 }) }, 2200);
+      setInterval(() => { no.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-6px)' }, { transform: 'translateY(0)' }], { duration: 2400 }) }, 2600);
+    })();
+
+    /* ---------------------
+       Kick off (preload a GIF to reduce flicker)
+       --------------------- */
+    (function preload() {
+      const p1 = new Image(); p1.src = YES_GIF;
+      NO_GIFS.forEach(u => { const p = new Image(); p.src = u; });
+    })();
+
+  </script>
+</body>
+
+</html>
