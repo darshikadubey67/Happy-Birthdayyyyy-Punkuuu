@@ -1028,53 +1028,76 @@
       </style>
 
 <div class="voice-card">
-  <h2>🎤 A Special Voice Message</h2>
-  <button id="playVoice" class="btn">Play Message</button>
-</div>
-<style>
-.voice-card {
-  background: linear-gradient(135deg, #ffb6c1, #ff69b4);
-  padding: 20px;
-  border-radius: 20px;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  margin: 20px auto;
-  max-width: 400px;
-  color: white;
-  font-size: 1.2rem;
-}
-.voice-card .btn {
-  background: white;
-  color: #ff4081;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: transform 0.2s;
-}
-.voice-card .btn:hover {
-  transform: scale(1.1);
-}
-</style>
-<script>
-const playBtn = document.getElementById("playVoice");
-let voiceMsg = new Audio("voice.mp3"); // upload your recorded mp3
-let playing = false;
+        <h2>🎤 A Special Voice Message</h2>
+        <button id="playVoice" class="btn">Play Message</button>
+      </div>
+<!-- Hidden audio element -->
+<audio id="voiceAudio" src="Audio from Darshika.mp3"></audio>
 
 
-playBtn.addEventListener("click", () => {
-  if (!playing) {
-    voiceMsg.play();
-    playBtn.textContent = "Pause Message ⏸️";
-  } else {
-    voiceMsg.pause();
-    playBtn.textContent = "Play Message ▶️";
-  }
-  playing = !playing;
-});
+<!-- Hidden audio element -->
+<audio id="voiceAudio" src="Audio from Darshika (1).mp3"></audio>
+
+
+      <style>
+        .voice-card {
+          background: linear-gradient(135deg, #ffb6c1, #ff69b4);
+          padding: 20px;
+          border-radius: 20px;
+          text-align: center;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+          margin: 20px auto;
+          max-width: 400px;
+          color: white;
+          font-size: 1.2rem;
+        }
+
+        .voice-card .btn {
+          background: white;
+          color: #ff4081;
+          padding: 10px 20px;
+          border: none;
+          border-radius: 10px;
+          cursor: pointer;
+          font-weight: bold;
+          transition: transform 0.2s;
+        }
+
+        .voice-card .btn:hover {
+          transform: scale(1.1);
+        }
+      </style>
+      <script>
+  const playBtn = document.getElementById("playVoice");
+  const audioFiles = ["Audio from Darshika.mp3", "Audio from Darshika (1).mp3"];
+  let current = 0;
+  let audio = new Audio(audioFiles[current]);
+  let playing = false;
+
+  playBtn.addEventListener("click", () => {
+    if (!playing) {
+      audio.play();
+      playBtn.textContent = "Pause Message ⏸️";
+    } else {
+      audio.pause();
+      playBtn.textContent = "Play Message ▶️";
+    }
+    playing = !playing;
+  });
+
+  audio.addEventListener("ended", () => {
+    current++;
+    if (current < audioFiles.length) {
+      audio = new Audio(audioFiles[current]);
+      audio.play();
+    } else {
+      current = 0; // reset to first file
+      audio = new Audio(audioFiles[current]);
+      playBtn.textContent = "Play Message ▶️";
+      playing = false;
+    }
+  });
 </script>
-
       </section>
       <footer>Made with endless love - Chikooo 💖</footer>
   </main>
@@ -1390,3 +1413,4 @@ function createGiftCards() {
 
 
 </html>
+
